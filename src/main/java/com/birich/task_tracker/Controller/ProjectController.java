@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.birich.task_tracker.Dto.ProjectResponse;
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Service.ProjectService;
 
@@ -20,7 +21,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public List<Project> getAll(){
+    public List<ProjectResponse> getAll(){
         return projectService.findAll();
     }
 

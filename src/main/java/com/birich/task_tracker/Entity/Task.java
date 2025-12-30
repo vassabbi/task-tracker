@@ -1,29 +1,30 @@
 package com.birich.task_tracker.Entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor
-public class Project {
+public class Task {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
-    private String name;
+    private String title;
     private String description;
 
-    @OneToMany(mappedBy="project", cascade=CascadeType.ALL)
-    private List<Task> tasks = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable=false)
+    private Project project;
 }
