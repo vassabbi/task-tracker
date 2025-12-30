@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.birich.task_tracker.Dto.CreateProjectRequest;
 import com.birich.task_tracker.Dto.ProjectResponse;
-import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Service.ProjectService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +27,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public Project create(@RequestBody Project project){
+    public ProjectResponse create(@Valid @RequestBody CreateProjectRequest project){
         return projectService.create(project);
     }
 }

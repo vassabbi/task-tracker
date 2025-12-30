@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.birich.task_tracker.Dto.CreateTaskRequest;
 import com.birich.task_tracker.Dto.TaskResponse;
-import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Service.TaskService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,9 +23,9 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public Task create(
+    public TaskResponse create(
         @PathVariable long projectId,
-        @RequestBody Task task
+        @Valid @RequestBody CreateTaskRequest task
     ){
         return taskService.create(projectId, task);
     }

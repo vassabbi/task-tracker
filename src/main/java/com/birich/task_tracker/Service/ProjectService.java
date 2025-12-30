@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.birich.task_tracker.Dto.CreateProjectRequest;
 import com.birich.task_tracker.Dto.ProjectResponse;
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Repository.ProjectRepository;
@@ -25,7 +26,15 @@ public class ProjectService {
             .toList();
     }
 
-    public Project create(Project project){
-        return projectRepository.save(project);
+    public ProjectResponse create(CreateProjectRequest request){
+        Project project = new Project();
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        Project saved = projectRepository.save(project);
+        return new ProjectResponse(
+            saved.getId(), 
+            saved.getName(), 
+            saved.getDescription()
+        );
     }
 }

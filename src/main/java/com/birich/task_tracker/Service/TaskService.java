@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.birich.task_tracker.Dto.CreateTaskRequest;
 import com.birich.task_tracker.Dto.TaskResponse;
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
@@ -19,14 +20,25 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
 
-    public Task create(Long projectId, Task task){
+    public TaskResponse create(Long projectId, CreateTaskRequest request){
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new RuntimeException("Project not found"));
         
+        Task task = new Task();
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
         task.setProject(project);
         task.setStatus(TaskStatus.TODO);
 
-        return taskRepository.save(task);
+        Task saved = taskRepository.save(task);
+
+        return new TaskResponse(
+            saved.getId(), 
+            saved.getTitle(),
+            saved.getDescription(), 
+            saved.getStatus()
+        );
     }
 
     public List<TaskResponse> getByProject(Long projectId){
