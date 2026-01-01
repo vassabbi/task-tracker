@@ -1,4 +1,4 @@
-package com.birich.task_tracker.Controller;
+package com.birich.task_tracker.Controller.api;
 
 import java.util.List;
 
