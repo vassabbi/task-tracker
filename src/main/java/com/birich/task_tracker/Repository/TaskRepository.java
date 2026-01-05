@@ -9,4 +9,5 @@ import com.birich.task_tracker.Entity.Task;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByProjectId(Long projectId);
+    List<Task> findByProjectIdOrderByIdAsc(Long projectId);
 }

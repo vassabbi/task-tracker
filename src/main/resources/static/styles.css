@@ -58,3 +58,50 @@ button {
 button:hover {
     background-color: #004c99;
 }
+
+.task-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.task-title {
+    flex: 1;
+    font-size: 16px;
+}
+
+/* Стиль кнопок */
+.task-status-form select {
+    width: auto;
+}
+
+.task-status-form button.save-btn {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 14px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.task-status-form button.save-btn:hover {
+    background-color: #004c99;
+}
+
+.task-delete-form button.delete-btn {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 14px;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.task-delete-form button.delete-btn:hover {
+    background-color: #990000;
+}

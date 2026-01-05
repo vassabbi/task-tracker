@@ -10,9 +10,30 @@
 
     <ul>
         <li th:each="task : ${tasks}">
-            <b th:text="${task.title}"></b>
-            —
-            <span th:text="${task.status}"></span>
+            <div class="task-row">
+                <span class="task-title" th:text="${task.title}"></span>
+
+                <!-- Форма изменения статуса -->
+                <form th:action="@{/projects/{pid}/tasks/{tid}/status(pid=${projectId}, tid=${task.id})}"
+                    method="post"
+                    class="task-status-form">
+                    <select name="status">
+                        <option th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == task.status}">
+                        </option>
+                    </select>
+                    <button type="submit" class="save-btn">Save</button>
+                </form>
+
+                <!-- Форма удаления задачи -->
+                <form th:action="@{/projects/{pid}/tasks/{tid}/delete(pid=${projectId}, tid=${task.id})}"
+                    method="post"
+                    class="task-delete-form">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
         </li>
     </ul>
 

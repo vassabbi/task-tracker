@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.birich.task_tracker.Dto.CreateProjectRequest;
+import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
 import com.birich.task_tracker.Service.TaskService;
 
@@ -32,6 +33,7 @@ public class ProjectWebController {
     public String projectDetails(@PathVariable Long id, Model model){
         model.addAttribute("tasks", taskService.getByProject(id));
         model.addAttribute("projectId", id);
+        model.addAttribute("statuses", TaskStatus.values());
         return "project-details";
     }
 

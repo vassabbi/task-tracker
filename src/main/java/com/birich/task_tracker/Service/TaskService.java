@@ -42,7 +42,7 @@ public class TaskService {
     }
 
     public List<TaskResponse> getByProject(Long projectId){
-        return taskRepository.findByProjectId(projectId).stream()
+        return taskRepository.findByProjectIdOrderByIdAsc(projectId).stream()
             .map(t -> new TaskResponse(
                 t.getId(),
                 t.getTitle(),
@@ -50,5 +50,18 @@ public class TaskService {
                 t.getStatus()
             ))
             .toList();
+    }
+
+    public void updateStatus(Long taskId, TaskStatus taskStatus){
+        Task task = taskRepository.findById(taskId)
+            .orElseThrow();
+        task.setStatus(taskStatus);
+        taskRepository.save(task);
+    }
+
+    public void deleteTask(Long taskId){
+        Task task = taskRepository.findById(taskId)
+            .orElseThrow();
+        taskRepository.delete(task);
     }
 }
