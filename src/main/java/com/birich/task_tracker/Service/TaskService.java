@@ -2,6 +2,10 @@ package com.birich.task_tracker.Service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.birich.task_tracker.Dto.CreateTaskRequest;
@@ -50,6 +54,19 @@ public class TaskService {
                 t.getStatus()
             ))
             .toList();
+    }
+
+    public Page<Task> getByProject(
+        Long projectId,
+        int page,
+        int size
+    ){
+        Pageable pageable = PageRequest.of(
+            page, 
+            size,
+            Sort.by("id").descending()
+        );
+        return taskRepository.findByProjectId(projectId, pageable);
     }
 
     public void updateStatus(Long taskId, TaskStatus taskStatus){

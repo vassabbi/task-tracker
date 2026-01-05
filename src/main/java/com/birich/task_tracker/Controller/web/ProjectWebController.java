@@ -1,5 +1,6 @@
 package com.birich.task_tracker.Controller.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -7,8 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.birich.task_tracker.Dto.CreateProjectRequest;
+import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
 import com.birich.task_tracker.Service.TaskService;
@@ -30,8 +33,15 @@ public class ProjectWebController {
     }
 
     @GetMapping("/projects/{id}")
-    public String projectDetails(@PathVariable Long id, Model model){
-        model.addAttribute("tasks", taskService.getByProject(id));
+    public String projectDetails(
+        @PathVariable Long id, 
+        @RequestParam(defaultValue="0") int page,
+        Model model
+    ){
+        int pageSize = 5;
+        Page<Task> taskPage = taskService.getByProject(id, page, pageSize);
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("taskPage", taskPage);
         model.addAttribute("projectId", id);
         model.addAttribute("statuses", TaskStatus.values());
         return "project-details";

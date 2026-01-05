@@ -37,6 +37,25 @@
         </li>
     </ul>
 
+    <div class="pagination">
+
+        <a th:if="${taskPage.hasPrevious()}"
+        th:href="@{/projects/{id}(id=${projectId}, page=${taskPage.number - 1})}">
+            ← Prev
+        </a>
+
+        <span>
+            Page <b th:text="${taskPage.number + 1}"></b>
+            of <b th:text="${taskPage.totalPages}"></b>
+        </span>
+
+        <a th:if="${taskPage.hasNext()}"
+        th:href="@{/projects/{id}(id=${projectId}, page=${taskPage.number + 1})}">
+            Next →
+        </a>
+
+    </div>
+
     <h3>Add task</h3>
 
     <form th:action="@{/projects/{id}/tasks(id=${projectId})}" method="post">
