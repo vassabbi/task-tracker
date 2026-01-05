@@ -2,12 +2,17 @@ package com.birich.task_tracker.Controller.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import com.birich.task_tracker.Dto.CreateProjectRequest;
 import com.birich.task_tracker.Service.ProjectService;
 import com.birich.task_tracker.Service.TaskService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -19,6 +24,7 @@ public class ProjectWebController {
     @GetMapping("/")
     public String projects(Model model){
         model.addAttribute("projects", projectService.findAll());
+        model.addAttribute("projectForm", new CreateProjectRequest());
         return "projects";
     }
 
@@ -27,5 +33,19 @@ public class ProjectWebController {
         model.addAttribute("tasks", taskService.getByProject(id));
         model.addAttribute("projectId", id);
         return "project-details";
+    }
+
+    @PostMapping("/projects")
+    public String createProject(
+        @Valid @ModelAttribute("projectForm") CreateProjectRequest request,
+        BindingResult bindingResult,
+        Model model
+    ){
+        if (bindingResult.hasErrors()){
+            model.addAttribute("projects", projectService.findAll());
+            return "projects";
+        }
+        projectService.create(request);
+        return "redirect:/";
     }
 }

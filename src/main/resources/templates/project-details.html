@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" th:href="@{/styles.css}">
     <title>Project</title>
 </head>
 <body>
+<div class="container">
+    <h2>Tasks</h2>
 
-<h2>Tasks</h2>
+    <ul>
+        <li th:each="task : ${tasks}">
+            <b th:text="${task.title}"></b>
+            —
+            <span th:text="${task.status}"></span>
+        </li>
+    </ul>
 
-<ul>
-    <li th:each="task : ${tasks}">
-        <b th:text="${task.title}"></b>
-        —
-        <span th:text="${task.status}"></span>
-    </li>
-</ul>
+    <h3>Add task</h3>
 
-<h3>Add task</h3>
-
+    <form th:action="@{/projects/{id}/tasks(id=${projectId})}" method="post">
+        <input type="text" name="title" placeholder="Title" required>
+        <br>
+        <textarea name="description" placeholder="Description"></textarea>
+        <br>
+        <button type="submit">Add</button>
+    </form>
+</div>
 </body>
 </html>

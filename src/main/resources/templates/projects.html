@@ -1,16 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Projects</title>
         <link rel="stylesheet" th:href="@{/styles.css}">
+        <title>Projects</title>
     </head>
     <body>
-        <h1>Projects</h1>
-        <ul>
-            <li th:each="project : ${projects}">
-                <a th:href="@{/projects/{id}(id=${project.id})}"
-                    th:text="${project.name}"></a>
-            </li>
-        </ul>
+        <div class="container">
+            <h1>Projects</h1>
+            <ul>
+                <li th:each="project : ${projects}">
+                    <a th:href="@{/projects/{id}(id=${project.id})}"
+                        th:text="${project.name}"></a>
+                </li>
+            </ul>
+            <hr>
+            <h2>Create project</h2>
+
+            <form th:action="@{/projects}" th:object="${projectForm}" method="post">
+                <input type="text" th:field="*{name}" placeholder="Project name" required>
+                <div th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}"
+                     style="color:red"></div>
+                <br>
+                <textarea th:field="*{description}" placeholder="Description"></textarea>
+                <div th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}"
+                     style="color:red"></div>
+                <br>
+                <button type="submit">Create</button>
+            </form>
+        </div>
     </body>
 </html>

@@ -22,8 +22,9 @@ public class Project {
     private Long id;
 
     private String name;
-    private String description;
+    private String description; 
 
     @OneToMany(mappedBy="project", cascade=CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 }
+    
