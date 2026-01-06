@@ -36,13 +36,23 @@ public class ProjectWebController {
     public String projectDetails(
         @PathVariable Long id, 
         @RequestParam(defaultValue="0") int page,
+        @RequestParam(required = false) TaskStatus status,
+        @RequestParam(required = false) String title,
         Model model
     ){
         int pageSize = 5;
-        Page<Task> taskPage = taskService.getByProject(id, page, pageSize);
+        Page<Task> taskPage = taskService.searchTasks(
+            id, 
+            status,
+            title,
+            page, 
+            pageSize
+        );
         model.addAttribute("tasks", taskPage.getContent());
         model.addAttribute("taskPage", taskPage);
         model.addAttribute("projectId", id);
+        model.addAttribute("status", status);
+        model.addAttribute("title", title);
         model.addAttribute("statuses", TaskStatus.values());
         return "project-details";
     }

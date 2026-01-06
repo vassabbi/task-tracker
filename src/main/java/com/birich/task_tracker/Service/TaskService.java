@@ -2,10 +2,12 @@ package com.birich.task_tracker.Service;
 
 import java.util.List;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.birich.task_tracker.Dto.CreateTaskRequest;
@@ -15,6 +17,7 @@ import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Repository.ProjectRepository;
 import com.birich.task_tracker.Repository.TaskRepository;
+import com.birich.task_tracker.Repository.TaskSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,5 +83,26 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
             .orElseThrow();
         taskRepository.delete(task);
+    }
+
+    public Page<Task> searchTasks(
+        Long projectId,
+        TaskStatus status,
+        String title,
+        int page,
+        int size
+    ){
+        Pageable pageable = PageRequest.of(
+            page, 
+            size, 
+            Sort.by("id").descending()
+        );
+
+        Specification<Task> spec = 
+            Specification.where(TaskSpecifications.hasProject(projectId))
+                        .and(TaskSpecifications.hasStatus(status))
+                        .and(TaskSpecifications.titleContains(title));
+        
+        return taskRepository.findAll(spec, pageable);
     }
 }

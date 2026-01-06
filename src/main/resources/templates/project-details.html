@@ -6,6 +6,28 @@
 </head>
 <body>
 <div class="container">
+    <form method="get"
+        th:action="@{/projects/{id}(id=${projectId})}"
+        class="filters">
+
+        <label>Status:</label>
+        <select name="status">
+            <option value="">ALL</option>
+            <option th:each="s : ${statuses}"
+                    th:value="${s}"
+                    th:text="${s}"
+                    th:selected="${s == status}">
+            </option>
+        </select>
+
+        <label>Search:</label>
+        <input type="text"
+            name="title"
+            th:value="${title}"
+            placeholder="Task title"/>
+
+        <button type="submit">Apply</button>
+    </form>
     <h2>Tasks</h2>
 
     <ul>
@@ -40,7 +62,12 @@
     <div class="pagination">
 
         <a th:if="${taskPage.hasPrevious()}"
-        th:href="@{/projects/{id}(id=${projectId}, page=${taskPage.number - 1})}">
+            th:href="@{/projects/{id}(
+                id=${projectId},
+                page=${taskPage.number - 1},
+                status=${status},
+                title=${title}
+        )}">
             ← Prev
         </a>
 
@@ -50,7 +77,12 @@
         </span>
 
         <a th:if="${taskPage.hasNext()}"
-        th:href="@{/projects/{id}(id=${projectId}, page=${taskPage.number + 1})}">
+        th:href="@{/projects/{id}(
+                id=${projectId},
+                page=${taskPage.number + 1},
+                status=${status},
+                title=${title}
+        )}">
             Next →
         </a>
 
