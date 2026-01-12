@@ -7,14 +7,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.birich.task_tracker.Dto.CreateTaskRequest;
 import com.birich.task_tracker.Dto.TaskResponse;
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
-import com.birich.task_tracker.Repository.ProjectRepository;
 import com.birich.task_tracker.Repository.TaskRepository;
 import com.birich.task_tracker.Repository.TaskSpecifications;
 
@@ -24,12 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final ProjectRepository projectRepository;
 
-    public TaskResponse create(Long projectId, CreateTaskRequest request){
-        Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new RuntimeException("Project not found"));
-        
+    public TaskResponse create(Project project, CreateTaskRequest request){
         Task task = new Task();
 
         task.setTitle(request.getTitle());
@@ -71,16 +68,16 @@ public class TaskService {
         return taskRepository.findByProjectId(projectId, pageable);
     }
 
-    public void updateStatus(Long taskId, TaskStatus taskStatus){
-        Task task = taskRepository.findById(taskId)
-            .orElseThrow();
+    public void updateStatus(Project project, Long taskId, TaskStatus taskStatus){
+        Task task = taskRepository.findByIdAndProject(taskId, project)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         task.setStatus(taskStatus);
         taskRepository.save(task);
     }
 
-    public void deleteTask(Long taskId){
-        Task task = taskRepository.findById(taskId)
-            .orElseThrow();
+    public void deleteTask(Project project, Long taskId){
+        Task task = taskRepository.findByIdAndProject(taskId, project)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         taskRepository.delete(task);
     }
 

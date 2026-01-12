@@ -1,6 +1,5 @@
 package com.birich.task_tracker.Controller.web;
 
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,12 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.birich.task_tracker.Controller.web.view.ProjectPageService;
 import com.birich.task_tracker.Dto.CreateProjectRequest;
-import com.birich.task_tracker.Entity.Project;
-import com.birich.task_tracker.Entity.Task;
+import com.birich.task_tracker.Dto.CreateTaskRequest;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
-import com.birich.task_tracker.Service.TaskService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectWebController {
     private final ProjectService projectService;
-    private final TaskService taskService;
+    private final ProjectPageService projectPageService;
 
     @GetMapping("/projects")
     public String projects(Model model){
@@ -36,26 +34,13 @@ public class ProjectWebController {
     @GetMapping("/projects/{id}")
     public String projectDetails(
         @PathVariable Long id, 
-        @RequestParam(defaultValue="0") int page    ,
+        @RequestParam(defaultValue="0") int page,
         @RequestParam(required = false) TaskStatus status,
         @RequestParam(required = false) String title,
         Model model
     ){
-        Project project = projectService.getProjectForCurrentUser(id);
-        int pageSize = 5;
-        Page<Task> taskPage = taskService.searchTasks(
-            project, 
-            status,
-            title,
-            page, 
-            pageSize
-        );
-        model.addAttribute("tasks", taskPage.getContent());
-        model.addAttribute("taskPage", taskPage);
-        model.addAttribute("project", project);
-        model.addAttribute("status", status);
-        model.addAttribute("title", title);
-        model.addAttribute("statuses", TaskStatus.values());
+        projectPageService.fillProjectDetailsPage(id, page, status, title, model);
+        model.addAttribute("taskForm", new CreateTaskRequest());
         return "project-details";
     }
 
