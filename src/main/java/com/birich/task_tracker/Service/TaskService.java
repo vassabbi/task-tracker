@@ -2,7 +2,6 @@ package com.birich.task_tracker.Service;
 
 import java.util.List;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -86,7 +85,7 @@ public class TaskService {
     }
 
     public Page<Task> searchTasks(
-        Long projectId,
+        Project project,
         TaskStatus status,
         String title,
         int page,
@@ -99,7 +98,7 @@ public class TaskService {
         );
 
         Specification<Task> spec = 
-            Specification.where(TaskSpecifications.hasProject(projectId))
+            Specification.where(TaskSpecifications.hasProject(project))
                         .and(TaskSpecifications.hasStatus(status))
                         .and(TaskSpecifications.titleContains(title));
         

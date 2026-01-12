@@ -2,13 +2,14 @@ package com.birich.task_tracker.Repository;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
 
 public class TaskSpecifications {
-    public static Specification<Task> hasProject(Long projectId){
+    public static Specification<Task> hasProject(Project project){
         return (root, query, cb) ->
-            cb.equal(root.get("project").get("id"), projectId);
+            cb.equal(root.get("project"), project);
     }
 
     public static Specification<Task> hasStatus(TaskStatus status){

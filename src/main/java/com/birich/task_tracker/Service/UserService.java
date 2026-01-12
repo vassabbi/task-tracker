@@ -2,7 +2,6 @@ package com.birich.task_tracker.Service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.birich.task_tracker.Dto.RegisterRequest;
 import com.birich.task_tracker.Entity.Role;
 import com.birich.task_tracker.Entity.User;

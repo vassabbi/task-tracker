@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthController {
     private final UserService userService;
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("registerRequest", new RegisterRequest());

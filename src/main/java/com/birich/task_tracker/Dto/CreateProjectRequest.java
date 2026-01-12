@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class CreateProjectRequest {
-
     @NotBlank(message="Name must not be empty")
     @Size(min = 3, max = 100, message="Project name must be 3-100 characters")
     private String name;

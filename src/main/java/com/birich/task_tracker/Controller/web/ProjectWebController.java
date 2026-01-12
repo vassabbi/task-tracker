@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.birich.task_tracker.Dto.CreateProjectRequest;
+import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
@@ -25,9 +26,9 @@ public class ProjectWebController {
     private final ProjectService projectService;
     private final TaskService taskService;
 
-    @GetMapping("/")
+    @GetMapping("/projects")
     public String projects(Model model){
-        model.addAttribute("projects", projectService.findAll());
+        model.addAttribute("projects", projectService.findAllForCurrentUser());
         model.addAttribute("projectForm", new CreateProjectRequest());
         return "projects";
     }
@@ -35,14 +36,15 @@ public class ProjectWebController {
     @GetMapping("/projects/{id}")
     public String projectDetails(
         @PathVariable Long id, 
-        @RequestParam(defaultValue="0") int page,
+        @RequestParam(defaultValue="0") int page    ,
         @RequestParam(required = false) TaskStatus status,
         @RequestParam(required = false) String title,
         Model model
     ){
+        Project project = projectService.getProjectForCurrentUser(id);
         int pageSize = 5;
         Page<Task> taskPage = taskService.searchTasks(
-            id, 
+            project, 
             status,
             title,
             page, 
@@ -50,7 +52,7 @@ public class ProjectWebController {
         );
         model.addAttribute("tasks", taskPage.getContent());
         model.addAttribute("taskPage", taskPage);
-        model.addAttribute("projectId", id);
+        model.addAttribute("project", project);
         model.addAttribute("status", status);
         model.addAttribute("title", title);
         model.addAttribute("statuses", TaskStatus.values());
@@ -68,6 +70,6 @@ public class ProjectWebController {
             return "projects";
         }
         projectService.create(request);
-        return "redirect:/";
+        return "redirect:/projects";
     }
 }
