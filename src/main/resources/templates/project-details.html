@@ -5,7 +5,9 @@
     <title>Project</title>
 </head>
 <body>
-<div class="container">
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container">
+    <h2 th:text="${project.name}"></h2>
     <form method="get"
         th:action="@{/projects/{id}(id=${project.id})}"
         class="filters">
