@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
+import com.birich.task_tracker.Entity.TaskPriority;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
 import com.birich.task_tracker.Service.TaskService;
@@ -40,5 +41,6 @@ public class ProjectPageService {
         model.addAttribute("status", status);
         model.addAttribute("title", title);
         model.addAttribute("statuses", TaskStatus.values());
+        model.addAttribute("priorities", TaskPriority.values());
     }
 }

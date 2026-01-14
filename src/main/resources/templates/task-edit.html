@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit task</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+    <h2>Edit task</h2>
+
+    <form th:action="@{/projects/{pid}/tasks/{tid}(pid=${project.id}, tid=${taskId})}"
+          th:object="${taskForm}"
+          method="post">
+
+        <label>Title</label><br>
+        <input type="text" th:field="*{title}">
+        <div th:errors="*{title}" style="color:red"></div>
+
+        <br><br>
+
+        <label>Description</label><br>
+        <textarea th:field="*{description}"></textarea>
+
+        <br><br>
+
+        <label>Status</label><br>
+        <select th:field="*{status}">
+            <option th:each="s : ${statuses}"
+                    th:value="${s}"
+                    th:text="${s}">
+            </option>
+        </select>
+
+        <br><br>
+
+        <label>Priority</label><br>
+        <select th:field="*{priority}">
+            <option th:each="p : ${priorities}"
+                    th:value="${p}"
+                    th:text="${p}">
+            </option>
+        </select>
+
+        <br><br>
+
+        <label>Due date</label><br>
+        <input type="date" th:field="*{dueDate}">
+        <div th:errors="*{dueDate}" style="color:red"></div>
+
+        <br><br>
+
+        <button type="submit">Save</button>
+        <a th:href="@{/projects/{id}(id=${project.id})}">Cancel</a>
+    </form>
+</div>
+
+</body>
+</html>

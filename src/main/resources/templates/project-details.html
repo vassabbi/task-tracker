@@ -105,6 +105,15 @@
             style="color:red">
         </div>
         <br>
+        <select th:field="*{priority}">
+            <option value="">-- Select priority --</option>
+            <option th:each="p : ${priorities}"
+                    th:value="${p}"
+                    th:text="${p}"
+                    th:selected="${p == priority}">
+            </option>
+        </select>
+        <input type="date" th:field="*{dueDate}">
         <button type="submit">Add</button>
     </form>
 </div>

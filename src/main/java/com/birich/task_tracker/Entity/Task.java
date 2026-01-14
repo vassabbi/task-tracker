@@ -1,5 +1,8 @@
 package com.birich.task_tracker.Entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,4 +32,25 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project_id", nullable=false)
     private Project project;
+
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority;
+
+    private LocalDate dueDate;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime completedAt;
+
+    @PrePersist
+    public void onCreate(){
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+    
+
 }
