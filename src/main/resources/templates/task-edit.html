@@ -10,7 +10,7 @@
 <div class="container">
     <h2>Edit task</h2>
 
-    <form th:action="@{/projects/{pid}/tasks/{tid}(pid=${project.id}, tid=${taskId})}"
+    <form th:action="@{/projects/{pid}/tasks/{tid}(pid=${projectId}, tid=${taskId})}"
           th:object="${taskForm}"
           method="post">
 
@@ -52,7 +52,7 @@
         <br><br>
 
         <button type="submit">Save</button>
-        <a th:href="@{/projects/{id}(id=${project.id})}">Cancel</a>
+        <a th:href="@{/projects/{id}(id=${projectId})}">Cancel</a>
     </form>
 </div>
 

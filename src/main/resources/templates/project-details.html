@@ -35,7 +35,9 @@
     <ul>
         <li th:each="task : ${tasks}">
             <div class="task-row">
-                <span class="task-title" th:text="${task.title}"></span>
+                <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id}, tid=${task.id})}">
+                    <span class="task-title" th:text="${task.title}"></span>
+                </a>
 
                 <!-- Форма изменения статуса -->
                 <form th:action="@{/projects/{pid}/tasks/{tid}/status(pid=${project.id}, tid=${task.id})}"

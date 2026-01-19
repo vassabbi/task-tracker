@@ -22,14 +22,14 @@
     <hr>
 
     <a th:href="@{/projects/{pid}/tasks/{tid}/edit(
-        pid=${task.project.id},
+        pid=${projectId},
         tid=${task.id}
     )}">
         Edit
     </a>
 
     |
-    <a th:href="@{/projects/{pid}(pid=${task.project.id})}">
+    <a th:href="@{/projects/{pid}(pid=${projectId})}">
         Back to project
     </a>
 

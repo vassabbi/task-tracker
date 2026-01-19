@@ -101,6 +101,7 @@ public class TaskWebController {
     ){
         TaskView task = taskService.getTask(projectId, taskId);
         model.addAttribute("task", task);
+        model.addAttribute("projectId", projectId);
         return "task-details";
     }
 }

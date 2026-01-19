@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title th:text="${title} ?: 'Task Tracker'"></title>
-        <link rel="stylesheet" th:href="@{/styles.css}">
-    </head>
     <body>
-        <div th:replace="fragments/header :: body"></div>
+        <header th:fragment="header" class="header">
+            <div class="container header-content">
 
-        <main class="container" layout:fragment="content">
-        </main>
+                <a th:href="@{/projects}" class="logo">TaskTracker</a>
+
+                <nav>
+                    <span th:if="${#authentication.authenticated}">
+                        Hello, <b th:text="${#authentication.name}"></b>
+                        |
+                        <form th:action="@{/logout}" method="post" class="logout-form">
+                            <button type="submit">Logout</button>
+                        </form>
+                    </span>
+
+                    <span th:if="${!#authentication.authenticated}">
+                        <a th:href="@{/login}">Login</a>
+                        |
+                        <a th:href="@{/register}">Register</a>
+                    </span>
+                </nav>
+
+            </div>
+        </header>
     </body>
 </html>
