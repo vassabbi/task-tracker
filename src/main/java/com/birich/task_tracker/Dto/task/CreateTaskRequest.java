@@ -1,4 +1,4 @@
-package com.birich.task_tracker.Dto;
+package com.birich.task_tracker.Dto.task;
 
 import java.time.LocalDate;
 

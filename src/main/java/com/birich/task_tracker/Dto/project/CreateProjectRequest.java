@@ -1,4 +1,4 @@
-package com.birich.task_tracker.Dto;
+package com.birich.task_tracker.Dto.project;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

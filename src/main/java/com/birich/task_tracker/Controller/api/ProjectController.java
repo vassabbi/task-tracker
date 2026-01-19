@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.birich.task_tracker.Dto.CreateProjectRequest;
-import com.birich.task_tracker.Dto.ProjectResponse;
+import com.birich.task_tracker.Dto.project.CreateProjectRequest;
+import com.birich.task_tracker.Dto.project.ProjectView;
 import com.birich.task_tracker.Service.ProjectService;
 
 import jakarta.validation.Valid;
@@ -22,12 +22,12 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public List<ProjectResponse> getAll(){
-        return projectService.findAll();
+    public List<ProjectView> getAll(){
+        return projectService.findAllForCurrentUser();
     }
 
     @PostMapping
-    public ProjectResponse create(@Valid @RequestBody CreateProjectRequest project){
+    public ProjectView create(@Valid @RequestBody CreateProjectRequest project){
         return projectService.create(project);
     }
 }

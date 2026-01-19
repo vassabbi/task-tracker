@@ -52,5 +52,14 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
     
+    public void markComplete(){
+        this.status = TaskStatus.DONE;
+        this.completedAt = LocalDateTime.now();
+    }
+
+    public void reopen(){
+        this.status = TaskStatus.TODO;
+        this.createdAt = LocalDateTime.now();
+    }
 
 }

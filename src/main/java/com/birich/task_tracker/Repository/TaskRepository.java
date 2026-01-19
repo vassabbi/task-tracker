@@ -17,6 +17,10 @@ public interface TaskRepository
 
     List<Task> findByProjectId(Long projectId);
     List<Task> findByProjectIdOrderByIdAsc(Long projectId);
+    Page<Task> findByProject(
+        Project project,
+        Pageable pageable
+    );
     Page<Task> findByProjectId(
         Long projectId,
         Pageable pageable

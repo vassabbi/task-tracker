@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.birich.task_tracker.Controller.web.view.ProjectPageService;
 import com.birich.task_tracker.Controller.web.view.TaskPageEditService;
-import com.birich.task_tracker.Dto.CreateTaskRequest;
-import com.birich.task_tracker.Dto.UpdateTaskRequest;
-import com.birich.task_tracker.Entity.Project;
-import com.birich.task_tracker.Entity.Task;
+import com.birich.task_tracker.Dto.task.CreateTaskRequest;
+import com.birich.task_tracker.Dto.task.TaskView;
+import com.birich.task_tracker.Dto.task.UpdateTaskRequest;
 import com.birich.task_tracker.Entity.TaskStatus;
-import com.birich.task_tracker.Service.ProjectService;
 import com.birich.task_tracker.Service.TaskService;
 
 import jakarta.validation.Valid;
@@ -28,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/projects/{projectId}/tasks")
 public class TaskWebController {
     private final TaskService taskService;
-    private final ProjectService projectService;
     private final ProjectPageService projectPageService;
     private final TaskPageEditService taskPageEditService;
 
@@ -43,8 +40,7 @@ public class TaskWebController {
             projectPageService.fillProjectDetailsPage(projectId, 0, null, null, model);
             return "project-details";
         }
-        Project project = projectService.getProjectForCurrentUser(projectId);
-        taskService.create(project, request);
+        taskService.create(projectId, request);
         return "redirect:/projects/" + projectId;
     }
 
@@ -54,8 +50,7 @@ public class TaskWebController {
         @PathVariable Long taskId,
         @RequestParam TaskStatus status
     ) {
-        Project project = projectService.getProjectForCurrentUser(projectId);
-        taskService.updateStatus(project, taskId, status);
+        taskService.updateStatus(projectId, taskId, status);
         return "redirect:/projects/" + projectId;
     }
 
@@ -64,8 +59,7 @@ public class TaskWebController {
         @PathVariable Long projectId,
         @PathVariable Long taskId
     ){
-        Project project = projectService.getProjectForCurrentUser(projectId);
-        taskService.deleteTask(project, taskId);
+        taskService.deleteTask(projectId, taskId);
         return "redirect:/projects/" + projectId;
     }
 
@@ -75,11 +69,10 @@ public class TaskWebController {
         @PathVariable Long taskId,
         Model model
     ){
-        Project project = projectService.getProjectForCurrentUser(projectId);
-        UpdateTaskRequest form = taskService.getUpdateForm(project, taskId);
+        UpdateTaskRequest form = taskService.getUpdateForm(projectId, taskId);
 
         model.addAttribute("taskForm", form);
-        taskPageEditService.fillTaskEditPage(project, taskId, model);
+        taskPageEditService.fillTaskEditPage(projectId, taskId, model);
 
         return "task-edit";
     }
@@ -92,12 +85,11 @@ public class TaskWebController {
         BindingResult bindingResult,
         Model model
     ){
-        Project project = projectService.getProjectForCurrentUser(projectId);
         if (bindingResult.hasErrors()){
-            taskPageEditService.fillTaskEditPage(project, taskId, model);
+            taskPageEditService.fillTaskEditPage(projectId, taskId, model);
             return "task-edit";
         }
-        taskService.updateTask(project, taskId, request);
+        taskService.updateTask(projectId, taskId, request);
         return "redirect:/projects/" + projectId;
     }
 
@@ -107,8 +99,7 @@ public class TaskWebController {
         @PathVariable Long taskId,
         Model model
     ){
-        Project project = projectService.getProjectForCurrentUser(projectId);
-        Task task = taskService.getTask(project, taskId);
+        TaskView task = taskService.getTask(projectId, taskId);
         model.addAttribute("task", task);
         return "task-details";
     }

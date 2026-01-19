@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.birich.task_tracker.Controller.web.view.ProjectPageService;
-import com.birich.task_tracker.Dto.CreateProjectRequest;
-import com.birich.task_tracker.Dto.CreateTaskRequest;
+import com.birich.task_tracker.Dto.project.CreateProjectRequest;
+import com.birich.task_tracker.Dto.task.CreateTaskRequest;
 import com.birich.task_tracker.Entity.TaskStatus;
 import com.birich.task_tracker.Service.ProjectService;
 
@@ -51,7 +51,7 @@ public class ProjectWebController {
         Model model
     ){
         if (bindingResult.hasErrors()){
-            model.addAttribute("projects", projectService.findAll());
+            model.addAttribute("projects", projectService.findAllForCurrentUser());
             return "projects";
         }
         projectService.create(request);

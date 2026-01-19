@@ -13,9 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.birich.task_tracker.Dto.CreateTaskRequest;
-import com.birich.task_tracker.Dto.TaskResponse;
-import com.birich.task_tracker.Dto.UpdateTaskRequest;
+import com.birich.task_tracker.Dto.task.CreateTaskRequest;
+import com.birich.task_tracker.Dto.task.TaskMapper;
+import com.birich.task_tracker.Dto.task.TaskView;
+import com.birich.task_tracker.Dto.task.UpdateTaskRequest;
 import com.birich.task_tracker.Entity.Project;
 import com.birich.task_tracker.Entity.Task;
 import com.birich.task_tracker.Entity.TaskStatus;
@@ -27,15 +28,18 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+    private final ProjectService projectService;
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskResponse create(Project project, CreateTaskRequest request){
+    public TaskView create(Long projectId, CreateTaskRequest request){
         if (request.getDueDate() != null &&
             request.getDueDate().isBefore(LocalDate.now())){
             throw new IllegalArgumentException("Due date cannot be in the past");
         }
 
         Task task = new Task();
+        Project project = projectService.getProjectForCurrentUser(projectId);
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -46,26 +50,16 @@ public class TaskService {
 
         Task saved = taskRepository.save(task);
 
-        return new TaskResponse(
-            saved.getId(), 
-            saved.getTitle(),
-            saved.getDescription(), 
-            saved.getStatus()
-        );
+        return taskMapper.toView(saved);
     }
 
-    public List<TaskResponse> getByProject(Long projectId){
+    public List<TaskView> getByProject(Long projectId){
         return taskRepository.findByProjectIdOrderByIdAsc(projectId).stream()
-            .map(t -> new TaskResponse(
-                t.getId(),
-                t.getTitle(),
-                t.getDescription(),
-                t.getStatus()
-            ))
+            .map(t -> taskMapper.toView(t))
             .toList();
     }
 
-    public Page<Task> getByProject(
+    public Page<TaskView> getByProject(
         Long projectId,
         int page,
         int size
@@ -75,29 +69,36 @@ public class TaskService {
             size,
             Sort.by("id").descending()
         );
-        return taskRepository.findByProjectId(projectId, pageable);
+
+        Project project = projectService.getProjectForCurrentUser(projectId);
+        Page<Task> tasks = taskRepository.findByProject(project, pageable);
+
+        return tasks.map(taskMapper::toView);
     }
 
-    public void updateStatus(Project project, Long taskId, TaskStatus taskStatus){
+    public void updateStatus(Long projectId, Long taskId, TaskStatus taskStatus){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Task task = taskRepository.findByIdAndProject(taskId, project)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         task.setStatus(taskStatus);
         taskRepository.save(task);
     }
 
-    public void deleteTask(Project project, Long taskId){
+    public void deleteTask(Long projectId, Long taskId){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Task task = taskRepository.findByIdAndProject(taskId, project)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         taskRepository.delete(task);
     }
 
-    public Page<Task> searchTasks(
-        Project project,
+    public Page<TaskView> searchTasks(
+        Long projectId,
         TaskStatus status,
         String title,
         int page,
         int size
     ){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Pageable pageable = PageRequest.of(
             page, 
             size, 
@@ -109,28 +110,17 @@ public class TaskService {
                         .and(TaskSpecifications.hasStatus(status))
                         .and(TaskSpecifications.titleContains(title));
         
-        return taskRepository.findAll(spec, pageable);
+        Page<Task> tasks = taskRepository.findAll(spec, pageable);
+        return tasks.map(taskMapper::toView);
+
+        //return taskRepository.findAll(spec, pageable);
     }
 
-    public void updateTask(Project project, Long taskId, UpdateTaskRequest request){
+    public void updateTask(Long projectId, Long taskId, UpdateTaskRequest request){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Task task = taskRepository.findByIdAndProject(taskId, project)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (request.getTitle() != null){
-            task.setTitle(request.getTitle());
-        }
-
-        if (request.getDescription() != null){
-            task.setDescription(request.getDescription());
-        }
-
-        if (request.getPriority() != null){
-            task.setPriority(request.getPriority());
-        }
-
-        if (request.getDueDate() != null){
-            task.setDueDate(request.getDueDate());
-        }
-
+        taskMapper.updateTask(task, request);
         if (request.getStatus() != null){
             updateStatus(task, request.getStatus());
         }
@@ -145,13 +135,15 @@ public class TaskService {
         task.setStatus(status);
     }
 
-    public Task getTask(Project project, Long taskId){
+    public TaskView getTask(Long projectId, Long taskId){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Task task = taskRepository.findByIdAndProject(taskId, project)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return task;
+        return taskMapper.toView(task);
     }
 
-    public UpdateTaskRequest getUpdateForm(Project project, Long taskId){
+    public UpdateTaskRequest getUpdateForm(Long projectId, Long taskId){
+        Project project = projectService.getProjectForCurrentUser(projectId);
         Task task = taskRepository.findByIdAndProject(taskId, project)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
