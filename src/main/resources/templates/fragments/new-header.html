@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <header th:fragment="header" class="header">
+        <div class="container header-content">
+            <a th:href="@{/projects}" class="logo">TaskTracker</a>
+            
+            <nav class="nav">
+                <div th:if="${#authentication.authenticated}">
+                    <span class="user-info">
+                        <i class="fas fa-user"></i>
+                        <span th:text="${#authentication.name}"></span>
+                    </span>
+                    
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <button type="submit" class="btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+                
+                <div th:if="${!#authentication.authenticated}">
+                    <a th:href="@{/login}" class="btn btn-link">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+</body>
+</html>

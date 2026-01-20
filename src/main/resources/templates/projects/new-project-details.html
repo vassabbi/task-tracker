@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Project: [[${project.name}]]</title>
+
+    <th:block layout:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/projects.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container mt-4">
+        <!-- ========== ШАПКА ПРОЕКТА ========== -->
+        <div class="project-header">
+            <div class="project-header-main">
+                <div class="project-info">
+                    <div class="project-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="project-details">
+                        <h1 class="project-title">[[${project.name}]]</h1>
+                        <p class="project-description" th:text="${project.description} ?: 'No description'"></p>
+                    </div>
+                </div>
+                
+                <div class="project-actions">
+                    <button class="btn btn-create-task" onclick="showCreateModal()">
+                        <i class="fas fa-plus"></i> New Task
+                    </button>
+                </div>
+            </div>
+            
+            <div class="project-stats">
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${taskPage.totalElements}"></div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">
+                        <span th:text="${#lists.size(tasks)}"></span>/<span th:text="${taskPage.totalElements}"></span>
+                    </div>
+                    <div class="stat-label">Showing</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${taskPage.number + 1}"></div>
+                    <div class="stat-label">Current Page</div>
+                </div>
+            </div>
+        </div>
+        <div class="project-main-layout">
+            <!-- САЙДБАР С ФИЛЬТРАМИ -->
+            <aside class="project-sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-filter"></i> Filter Tasks
+                    </h3>
+                    
+                    <form method="get" th:action="@{/projects/{id}(id=${project.id})}" class="filters-form">
+                        <!-- Статус -->
+                        <div class="filter-group">
+                            <label class="filter-label">
+                                <i class="fas fa-tasks"></i> Status
+                            </label>
+                            <div class="status-filters">
+                                <label class="status-filter-option">
+                                    <input type="radio" name="status" value="" 
+                                        th:checked="${status == null}"
+                                        onchange="this.form.submit()">
+                                    <span class="status-filter-badge all">
+                                        <i class="fas fa-layer-group"></i> All
+                                    </span>
+                                </label>
+                                <label class="status-filter-option" th:each="s : ${statuses}">
+                                    <input type="radio" name="status" th:value="${s}"
+                                        th:checked="${s == status}"
+                                        onchange="this.form.submit()">
+                                    <span th:classappend="'status-filter-badge status-' + ${s.name().toLowerCase()}"
+                                        th:text="${s}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Поиск -->
+                        <div class="filter-group">
+                            <label class="filter-label">
+                                <i class="fas fa-search"></i> Search
+                            </label>
+                            <div class="search-container">
+                                <input type="text" 
+                                    name="title" 
+                                    th:value="${title != null ? title : ''}"
+                                    placeholder="Search tasks..."
+                                    class="search-input"
+                                    onkeyup="if(event.key === 'Enter') this.form.submit()">
+                                <button type="submit" class="search-button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Приоритет -->
+                        <div class="filter-group">
+                            <label class="filter-label">
+                                <i class="fas fa-exclamation-circle"></i> Priority
+                            </label>
+                            <select name="priority" class="filter-select">
+                                <option value="">All Priorities</option>
+                                <option th:each="p : ${priorities}"
+                                        th:value="${p}"
+                                        th:text="${p}">
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary btn-apply-filters">
+                                <i class="fas fa-check"></i> Apply Filters
+                            </button>
+                            <a th:href="@{/projects/{id}(id=${project.id})}" class="btn btn-secondary btn-clear-filters">
+                                <i class="fas fa-times"></i> Clear All
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Быстрые действия -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h3>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="markAllDone()">
+                            <i class="fas fa-check-double"></i> Mark All Done
+                        </button>
+                        <button class="quick-action-btn" onclick="exportTasks()">
+                            <i class="fas fa-file-export"></i> Export Tasks
+                        </button>
+                    </div>
+                </div>
+            </aside>
+            <!-- 3. Простой список задач -->
+            <div class="tasks-section">
+                <div class="tasks-header">
+                    <div class="tasks-header-left">
+                        <h2 class="tasks-title">
+                            <i class="fas fa-tasks"></i> Tasks
+                            <span class="tasks-count">([[${taskPage.totalElements}]])</span>
+                        </h2>
+                        <div class="view-toggles">
+                            <span class="view-label">View:</span>
+                            <button class="view-toggle active" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                            <button class="view-toggle" data-view="grid">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                    
+                <!-- Пустой список -->
+                <div th:if="${#lists.isEmpty(tasks)}" class="empty-state">
+                    <p>No tasks found. Create your first task!</p>
+                </div>
+                    
+                <!-- Тестовые карточки (убедимся, что цикл работает) -->
+                <!-- Список задач -->
+                <div th:unless="${#lists.isEmpty(tasks)}" class="tasks-list">
+                    <div class="task-card" th:each="task : ${tasks}">
+                        <div class="task-card-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <h3 class="task-title">
+                                    <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id}, tid=${task.id})}"
+                                    th:text="${task.title}"></a>
+                                </h3>
+                            </div>
+                            
+                            <div class="task-actions">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a th:href="@{/projects/{pid}/tasks/{tid}/edit(pid=${project.id}, tid=${task.id})}"
+                                        class="dropdown-item">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form th:action="@{/projects/{pid}/tasks/{tid}/delete(pid=${project.id}, tid=${task.id})}"
+                                            method="post"
+                                            class="d-inline">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                            <button type="submit" class="dropdown-item text-danger"
+                                                    onclick="return confirm('Delete this task?')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Описание задачи -->
+                        <p class="task-description" th:text="${task.description} ?: 'No description provided'"></p>
+                        
+                        <!-- Мета-информация -->
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <span th:classappend="'priority-badge priority-' + ${task.priority.name().toLowerCase()}"
+                                    th:text="${task.priority}"></span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span th:classappend="'status-badge status-' + ${task.status.name().toLowerCase().replace('_', '-')}"
+                                    th:text="${task.status}"></span>
+                            </div>
+                            <div class="task-meta-item" th:if="${task.dueDate}">
+                                <i class="far fa-calendar-alt"></i>
+                                <span th:text="${#temporals.format(task.dueDate, 'MMM dd, yyyy')}"></span>
+                            </div>
+                            <div class="task-meta-item">
+                                <i class="far fa-clock"></i>
+                                <span th:text="${#temporals.format(task.createdAt, 'MMM dd')}"></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Быстрое изменение статуса -->
+                        <div class="task-quick-actions mt-2">
+                            <form th:action="@{/projects/{pid}/tasks/{tid}/status(pid=${project.id}, tid=${task.id})}"
+                                method="post"
+                                class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="submit" 
+                                            name="status" 
+                                            value="TODO"
+                                            th:classappend="'btn ' + (${task.status.name() == 'TODO'} ? 'btn-primary' : 'btn-outline')">
+                                        TODO
+                                    </button>
+                                    <button type="submit" 
+                                            name="status" 
+                                            value="IN_PROGRESS"
+                                            th:classappend="'btn ' + (${task.status.name() == 'IN_PROGRESS'} ? 'btn-primary' : 'btn-outline')">
+                                        IN PROGRESS
+                                    </button>
+                                    <button type="submit" 
+                                            name="status" 
+                                            value="DONE"
+                                            th:classappend="'btn ' + (${task.status.name() == 'DONE'} ? 'btn-primary' : 'btn-outline')">
+                                        DONE
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            
+            <!-- 4. Простая пагинация -->
+            <div class="pagination-simple" th:if="${taskPage.totalPages > 1}">
+                    <a th:if="${taskPage.hasPrevious()}"
+                    th:href="@{/projects/{id}(id=${project.id}, page=${taskPage.number - 1}, status=${status}, title=${title})}"
+                    class="pagination-link">
+                        ← Previous
+                    </a>
+                    
+                    <span class="pagination-info">
+                        Page [[${taskPage.number + 1}]] of [[${taskPage.totalPages}]]
+                    </span>
+                    
+                    <a th:if="${taskPage.hasNext()}"
+                    th:href="@{/projects/{id}(id=${project.id}, page=${taskPage.number + 1}, status=${status}, title=${title})}"
+                    class="pagination-link">
+                        Next →
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- 5. Простая форма добавления -->
+        <div class="create-task-section">
+            <h3>Add New Task</h3>
+            
+            <form th:action="@{/projects/{id}/tasks(id=${project.id})}" 
+                  th:object="${taskForm}" 
+                  method="post"
+                  class="create-task-form">
+                
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                
+                <div class="form-group">
+                    <label for="task-title">Title *</label>
+                    <input id="task-title" 
+                           th:field="*{title}" 
+                           type="text" 
+                           placeholder="What needs to be done?"
+                           required
+                           class="form-control">
+                    <div th:if="${#fields.hasErrors('title')}" 
+                         th:errors="*{title}"
+                         class="error-message">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" 
+                              th:field="*{description}" 
+                              placeholder="Add details, notes, or instructions..."
+                              class="form-control"
+                              rows="3"></textarea>
+                    <div th:if="${#fields.hasErrors('description')}" 
+                         th:errors="*{description}"
+                         class="error-message">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Priority *</label>
+                        <select id="task-priority" th:field="*{priority}" class="form-control">
+                            <option value="">-- Select priority --</option>
+                            <option th:each="p : ${priorities}"
+                                    th:value="${p}"
+                                    th:text="${p}">
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-due-date">Due Date</label>
+                        <input id="task-due-date" 
+                               type="date" 
+                               th:field="*{dueDate}"
+                               class="form-control">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Add Task</button>
+            </form>
+        </div>
+    </div>
+</main>
+    <th:block layout:fragment="scripts">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <script th:src="@{/js/projects.js}"></script>
+    </th:block>
+</body>
+</html>

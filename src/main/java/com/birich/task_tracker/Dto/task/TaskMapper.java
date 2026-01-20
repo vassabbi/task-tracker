@@ -14,7 +14,8 @@ public class TaskMapper {
             task.getDescription(),
             task.getStatus(),
             task.getPriority(),
-            task.getDueDate()
+            task.getDueDate(),
+            task.getCreatedAt()
         );
     }
 

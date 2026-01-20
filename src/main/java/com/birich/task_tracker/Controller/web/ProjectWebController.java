@@ -28,7 +28,7 @@ public class ProjectWebController {
     public String projects(Model model){
         model.addAttribute("projects", projectService.findAllForCurrentUser());
         model.addAttribute("projectForm", new CreateProjectRequest());
-        return "projects";
+        return "projects/projects";
     }
 
     @GetMapping("/projects/{id}")
@@ -41,7 +41,7 @@ public class ProjectWebController {
     ){
         projectPageService.fillProjectDetailsPage(id, page, status, title, model);
         model.addAttribute("taskForm", new CreateTaskRequest());
-        return "project-details";
+        return "projects/new-project-details";
     }
 
     @PostMapping("/projects")
@@ -52,7 +52,7 @@ public class ProjectWebController {
     ){
         if (bindingResult.hasErrors()){
             model.addAttribute("projects", projectService.findAllForCurrentUser());
-            return "projects";
+            return "projects/projects";
         }
         projectService.create(request);
         return "redirect:/projects";

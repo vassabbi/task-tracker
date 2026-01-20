@@ -38,7 +38,7 @@ public class TaskWebController {
     ){
         if (bindingResult.hasErrors()){
             projectPageService.fillProjectDetailsPage(projectId, 0, null, null, model);
-            return "project-details";
+            return "projects/new-project-details";
         }
         taskService.create(projectId, request);
         return "redirect:/projects/" + projectId;
@@ -74,7 +74,7 @@ public class TaskWebController {
         model.addAttribute("taskForm", form);
         taskPageEditService.fillTaskEditPage(projectId, taskId, model);
 
-        return "task-edit";
+        return "tasks/task-edit";
     }
 
     @PostMapping("/{taskId}")
@@ -87,7 +87,7 @@ public class TaskWebController {
     ){
         if (bindingResult.hasErrors()){
             taskPageEditService.fillTaskEditPage(projectId, taskId, model);
-            return "task-edit";
+            return "tasks/task-edit";
         }
         taskService.updateTask(projectId, taskId, request);
         return "redirect:/projects/" + projectId;
@@ -102,6 +102,6 @@ public class TaskWebController {
         TaskView task = taskService.getTask(projectId, taskId);
         model.addAttribute("task", task);
         model.addAttribute("projectId", projectId);
-        return "task-details";
+        return "tasks/task-details";
     }
 }
