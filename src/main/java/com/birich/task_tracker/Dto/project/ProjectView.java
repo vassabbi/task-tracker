@@ -10,4 +10,5 @@ public class ProjectView {
     private Long id;
     private String name;
     private String description;
+    private int taskCount;
 }

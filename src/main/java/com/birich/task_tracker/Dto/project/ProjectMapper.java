@@ -10,7 +10,8 @@ public class ProjectMapper {
         return new ProjectView(
             project.getId(),
             project.getName(),
-            project.getDescription()
+            project.getDescription(),
+            project.getTasks().size()
         );
     }
 }

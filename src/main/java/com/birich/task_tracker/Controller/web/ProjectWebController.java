@@ -28,6 +28,7 @@ public class ProjectWebController {
     public String projects(Model model){
         model.addAttribute("projects", projectService.findAllForCurrentUser());
         model.addAttribute("projectForm", new CreateProjectRequest());
+        model.addAttribute("totalTasks", 12);
         return "projects/projects";
     }
 
